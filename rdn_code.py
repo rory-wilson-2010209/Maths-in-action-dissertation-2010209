@@ -41,9 +41,74 @@ def plot_opinions(graph, time, opinions_history):
         plt.tick_params(axis='both', which='major', labelsize=12)
         
         plt.show()
+
+    #Graph layout visualisation
+    ax2 = plt.subplot(2, 1, 2)
+    opinions = {node: graph.nodes[node].get('opinion', 0) for node in graph.nodes}
+
+    # Sort nodes based on opinions
+    sorted_nodes = sorted(graph.nodes, key=lambda node: opinions[node])
+
+    num_nodes = len(graph.nodes)
+    pos = {}
+    # Point on the left for positive opinion nodes
+    left_point = (1, 0)
+    # Point on the right for negative opinion nodes
+    right_point = (-1, 0)
+
+    for i, node in enumerate(sorted_nodes):
+        if opinions[node] >= 0:
+            # Place positive opinion nodes closer to the left_point
+            x = left_point[0] - (1 - abs(opinions[node]))  
+        else:
+            # Place negative opinion nodes closer to the right_point
+            x = right_point[0] + (1 - abs(opinions[node]))
+
+        
+        total_outward_weight = sum(graph.get_edge_data(node, neighbor)["weight"] for neighbor in graph.neighbors(node))
+        y = total_outward_weight / 100 
+        pos[node] = (x, y)
+
+    # Normalise opinion values [-1, 1]
+    cmap = plt.get_cmap('plasma')
+    norm = plt.Normalize(vmin=-1, vmax=1)
+    node_colors = [cmap(norm(opinions[node])) for node in sorted_nodes]
+    node_sizes = [abs(opinions[node]) * 100 for node in sorted_nodes]
+
+    # Calculate edge alpha based on the distance between nodes
+    edge_alpha = [1/np.exp(np.sqrt((pos[u][0] - pos[v][0])**2 + (pos[u][1] - pos[v][1])**2)) for u, v in graph.edges()]
+    max_alpha = max(edge_alpha)
+    edge_alpha = [alpha / max_alpha for alpha in edge_alpha]  
+    edge_alpha = [0 if element < 0.41 else element for element in edge_alpha]
+    edge_alpha = np.clip(0,1000,edge_alpha)
+
+    nx.draw_networkx_nodes(graph, pos, nodelist=sorted_nodes, node_size=node_sizes, node_color=node_colors,
+                           cmap=cmap, alpha=1, linewidths=2.0, node_shape='o')
+
+    # Draw edges
+    edge_width = 1.4
+    nx.draw_networkx_edges(graph, pos, width=edge_width, edge_color='black', alpha=0.2)
+
+    nx.draw_networkx_labels(graph, pos, labels={node: '' for node in graph.nodes}, font_size=10, font_color='black')
+    plt.title('Network of nodes spatially dependent on current opinion', fontsize=18)
+
+    
+    # Create colourbar axis
+    sm = ScalarMappable(cmap=plt.cm.plasma)
+    sm.set_clim(vmin=-1, vmax=1)
+    sm.set_array(node_colors)
+    divider = make_axes_locatable(ax2)
+    cax = divider.append_axes("bottom", size="2%", pad=0.1)
+    cbar = plt.colorbar(sm, cax=cax, label='Opinion Value', orientation="horizontal")
+    cbar.set_ticks([-1, 0, 1])
+    
+    plt.tight_layout()
+    plt.show()
+
+
        
    
-
+#Interaction functions 
    
 def phi_1(x):
     return np.exp(-6 * x)
@@ -71,7 +136,6 @@ def phi_7(x):
     b = 0.3
     return np.piecewise(x, [x < a, (a <= x) & (x <= 2-b), x > 2-b],
                             [lambda x:-x/a+1, 0, lambda x: x/b -(2-b)/b])
-
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
@@ -106,7 +170,8 @@ def continuous_opinion_dynamics(graph, phi, steps, dt, weightde, noise_strength,
                     x_i = graph.nodes[node]['opinion']
                     x_j = graph.nodes[neighbor]['opinion']
                     sum_weighted_differences += weight * phi(np.abs(x_i - x_j)) * (x_j - x_i)
-
+                
+                #Random dnymaical nudge code
                 if RDN == True:
                     num_random_nodes = 5
                     random_nodes = random.sample(list(graph.nodes), num_random_nodes)
@@ -168,7 +233,7 @@ def plot_final_opinion_distribution(final_opinions):
     plt.yticks(fontsize=12)
     plt.show()
 
-# Create a random graph with probability p
+# Erdos renyi graph generation 
 graph = nx.erdos_renyi_graph(200, 0.2, directed=True)
 
 
