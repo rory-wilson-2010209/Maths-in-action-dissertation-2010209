@@ -136,9 +136,9 @@ for theta in unique_theta_values:
     color = plt.cm.plasma((theta - vmin) / (vmax - vmin)) 
     plt.plot(sorted_network_polarization[indices], sorted_virality[indices], '-o', color=color, label=f'Theta = {theta:.2f}')
 
-plt.xlabel('Network Polarization', fontsize=16)
+plt.xlabel('Network Polarisation', fontsize=16)
 plt.ylabel('Virality', fontsize=16)
-plt.title('Network Polarization vs. Virality', fontsize=18)
+plt.title('Network Polarisation vs. Virality', fontsize=18)
 
 
 colorbar = plt.colorbar(scatter, label='Theta')
@@ -195,9 +195,9 @@ for Po in unique_Po_values_second:
     color_second = plt.cm.viridis((Po - vmin_second) / (vmax_second - vmin_second))
     plt.plot(sorted_network_polarization_second[indices_second], sorted_virality_second[indices_second], '-o', color=color_second, label=f'Po = {Po:.2f}')
 
-plt.xlabel('Network Polarization', fontsize=16)
+plt.xlabel('Network Polarisation', fontsize=16)
 plt.ylabel('Virality', fontsize=16)
-plt.title('Network Polarization vs. Virality (Theta = 0.25)', fontsize=18)
+plt.title('Network Polarisation vs. Virality (Theta = 0.25)', fontsize=18)
 plt.tick_params(labelsize=14)
 
 colorbar_second = plt.colorbar(scatter_second, label='Po')
