@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def initialize_opinions(graph):
+def initialise_opinions(graph):
     opinions = {node: np.random.uniform(-1, 1, 2) for node in graph.nodes}
     nx.set_node_attributes(graph, opinions, 'opinion')
    
@@ -224,7 +224,7 @@ for edge in graph.edges:
     weight = np.random.rand()
     graph.edges[edge]['weight'] = weight
 
-initialize_opinions(graph)
+initialise_opinions(graph)
 calculate_total_edge_weights(graph)
 calculate_k_bar(graph)
 
