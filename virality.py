@@ -82,8 +82,8 @@ def run_model(parameters):
         
 
     average_success_rate = np.mean(results)
-    average_network_polarization = Pn
-    return average_network_polarization, average_success_rate, theta, Po
+    average_network_polarisation = Pn
+    return average_network_polarisation, average_success_rate, theta, Po
 
 # Define the parameter space
 start_Po, end_Po, num_Po_steps = 0.0, 0.0, 1
