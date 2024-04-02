@@ -7,9 +7,6 @@ from scipy.optimize import minimize_scalar
 
 np.random.seed(10)
 
-def initialize_opinions(graph):
-    opinions = {node: np.random.uniform(-1,1) for node in graph.nodes}
-    nx.set_node_attributes(graph, opinions, 'opinion')
    
 def plot_interaction_func(interact_func):
     # Plot the interaction function phi
